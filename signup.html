@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - Create Account</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#3b82f6", secondary: "#10b981" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+      :where([class^="ri-"])::before {
+      content: "\f3c2";
+      }
+      .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+      }
+      @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+      }
+      .fade-out {
+      animation: fadeOut 0.3s ease-in-out forwards;
+      }
+      @keyframes fadeOut {
+      to { opacity: 0; transform: translateY(-10px); }
+      }
+      .custom-checkbox {
+      appearance: none;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid #d1d5db;
+      border-radius: 0.25rem;
+      background-color: white;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+      }
+      .custom-checkbox:checked {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+      }
+      .custom-checkbox:checked::after {
+      content: '✓';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: bold;
+      }
+      .custom-checkbox:hover {
+      border-color: #3b82f6;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-md">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-['Pacifico'] text-gray-800 mb-2">logo</h1>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Create Account</h2>
+        <p class="text-gray-600">Join us to get started with your journey</p>
+      </div>
+      <div
+        id="successMessage"
+        class="hidden mb-6 p-4 bg-secondary text-white rounded-lg shadow-lg fade-in"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <div class="w-5 h-5 flex items-center justify-center mr-3">
+              <i class="ri-check-line text-lg"></i>
+            </div>
+            <span class="font-medium">Account created successfully!</span>
+          </div>
+          <button
+            id="dismissSuccess"
+            class="w-5 h-5 flex items-center justify-center hover:bg-green-600 rounded transition-colors"
+          >
+            <i class="ri-close-line text-sm"></i>
+          </button>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-xl p-8">
+        <form id="signupForm" class="space-y-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                for="firstName"
+                class="block text-sm font-medium text-gray-700 mb-2"
+                >First Name</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-user-line text-gray-400"></i>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  required
+                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm"
+                  placeholder="First name"
+                />
+              </div>
+            </div>
+            <div>
+              <label
+                for="lastName"
+                class="block text-sm font-medium text-gray-700 mb-2"
+                >Last Name</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-user-line text-gray-400"></i>
+                  </div>
+                </div>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  required
+                  class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm"
+                  placeholder="Last name"
+                />
+              </div>
+            </div>
+          </div>
+          <div>
+            <label
+              for="email"
+              class="block text-sm font-medium text-gray-700 mb-2"
+              >Email Address</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-mail-line text-gray-400"></i>
+                </div>
+              </div>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm"
+                placeholder="Enter email address"
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-700 mb-2"
+              >Password</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-lock-line text-gray-400"></i>
+                </div>
+              </div>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm"
+                placeholder="Create password"
+              />
+              <button
+                type="button"
+                id="togglePassword"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i
+                    class="ri-eye-line text-gray-400 hover:text-gray-600 transition-colors"
+                  ></i>
+                </div>
+              </button>
+            </div>
+            <p class="mt-2 text-xs text-gray-500">
+              Password must be at least 8 characters long
+            </p>
+          </div>
+          <div>
+            <label
+              for="confirmPassword"
+              class="block text-sm font-medium text-gray-700 mb-2"
+              >Confirm Password</label
+            >
+            <div class="relative">
+              <div
+                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i class="ri-lock-line text-gray-400"></i>
+                </div>
+              </div>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                required
+                class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm"
+                placeholder="Confirm password"
+              />
+              <button
+                type="button"
+                id="toggleConfirmPassword"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <div class="w-5 h-5 flex items-center justify-center">
+                  <i
+                    class="ri-eye-line text-gray-400 hover:text-gray-600 transition-colors"
+                  ></i>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <label class="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                id="terms"
+                name="terms"
+                required
+                class="custom-checkbox"
+              />
+              <span class="ml-2 text-sm text-gray-600"
+                >I agree to the
+                <a href="#" class="text-primary hover:text-blue-700"
+                  >Terms of Service</a
+                >
+                and
+                <a href="#" class="text-primary hover:text-blue-700"
+                  >Privacy Policy</a
+                ></span
+              >
+            </label>
+          </div>
+          <button
+            type="submit"
+            id="signupButton"
+            class="w-full bg-primary text-white py-3 px-4 rounded-button font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all whitespace-nowrap"
+          >
+            <span id="signupText">Create Account</span>
+            <div
+              id="signupSpinner"
+              class="hidden flex items-center justify-center"
+            >
+              <div
+                class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"
+              ></div>
+              Creating account...
+            </div>
+          </button>
+        </form>
+        <div class="mt-8 text-center">
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-white text-gray-500">OR</span>
+            </div>
+          </div>
+          <div class="mt-6 grid grid-cols-2 gap-3">
+            <button
+              class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-button bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors whitespace-nowrap"
+            >
+              <div class="w-5 h-5 flex items-center justify-center mr-2">
+                <i class="ri-google-fill text-red-500"></i>
+              </div>
+              Google
+            </button>
+            <button
+              class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-button bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors whitespace-nowrap"
+            >
+              <div class="w-5 h-5 flex items-center justify-center mr-2">
+                <i class="ri-github-fill text-gray-900"></i>
+              </div>
+              GitHub
+            </button>
+          </div>
+        </div>
+        <div class="mt-8 text-center">
+          <p class="text-sm text-gray-600">
+            Already have an account?
+            <a
+              href="#"
+              class="text-primary hover:text-blue-700 font-medium transition-colors"
+              >Sign In</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+    <script id="passwordToggle">
+      document.addEventListener("DOMContentLoaded", function () {
+        const togglePassword = document.getElementById("togglePassword");
+        const toggleConfirmPassword = document.getElementById(
+          "toggleConfirmPassword",
+        );
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
+        function setupPasswordToggle(toggleButton, passwordField) {
+          const toggleIcon = toggleButton.querySelector("i");
+          toggleButton.addEventListener("click", function () {
+            const type =
+              passwordField.getAttribute("type") === "password" ? "text" : "password";
+            passwordField.setAttribute("type", type);
+            if (type === "text") {
+              toggleIcon.className =
+                "ri-eye-off-line text-gray-400 hover:text-gray-600 transition-colors";
+            } else {
+              toggleIcon.className =
+                "ri-eye-line text-gray-400 hover:text-gray-600 transition-colors";
+            }
+          });
+        }
+        setupPasswordToggle(togglePassword, passwordInput);
+        setupPasswordToggle(toggleConfirmPassword, confirmPasswordInput);
+      });
+    </script>
+    <script id="signupForm">
+      document.addEventListener("DOMContentLoaded", function () {
+        const signupForm = document.getElementById("signupForm");
+        const signupButton = document.getElementById("signupButton");
+        const signupText = document.getElementById("signupText");
+        const signupSpinner = document.getElementById("signupSpinner");
+        const successMessage = document.getElementById("successMessage");
+        const password = document.getElementById("password");
+        const confirmPassword = document.getElementById("confirmPassword");
+        signupForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          if (password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity("Passwords don't match");
+            confirmPassword.reportValidity();
+            return;
+          }
+          signupText.classList.add("hidden");
+          signupSpinner.classList.remove("hidden");
+          signupButton.disabled = true;
+          setTimeout(function () {
+            signupText.classList.remove("hidden");
+            signupSpinner.classList.add("hidden");
+            signupButton.disabled = false;
+            successMessage.classList.remove("hidden");
+            successMessage.classList.add("fade-in");
+            setTimeout(function () {
+              if (!successMessage.classList.contains("hidden")) {
+                successMessage.classList.add("fade-out");
+                setTimeout(function () {
+                  successMessage.classList.add("hidden");
+                  successMessage.classList.remove("fade-out", "fade-in");
+                }, 300);
+              }
+            }, 5000);
+          }, 2000);
+        });
+        confirmPassword.addEventListener("input", function () {
+          if (password.value === confirmPassword.value) {
+            confirmPassword.setCustomValidity("");
+          } else {
+            confirmPassword.setCustomValidity("Passwords don't match");
+          }
+        });
+      });
+    </script>
+    <script id="successMessage">
+      document.addEventListener("DOMContentLoaded", function () {
+        const dismissSuccess = document.getElementById("dismissSuccess");
+        const successMessage = document.getElementById("successMessage");
+        dismissSuccess.addEventListener("click", function () {
+          successMessage.classList.add("fade-out");
+          setTimeout(function () {
+            successMessage.classList.add("hidden");
+            successMessage.classList.remove("fade-out", "fade-in");
+          }, 300);
+        });
+      });
+    </script>
+  </body>
+</html>
