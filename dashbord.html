@@ -1,737 +1,572 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sticky Notes App</title>
-    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      :where([class^="ri-"])::before { content: "\f3c2"; }
-    </style>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              primary: "#F59E0B",
-              secondary: "#EF4444",
-            },
-            borderRadius: {
-              none: "0px",
-              sm: "4px",
-              DEFAULT: "8px",
-              md: "12px",
-              lg: "16px",
-              xl: "20px",
-              "2xl": "24px",
-              "3xl": "32px",
-              full: "9999px",
-              button: "8px",
-            },
-          },
-        },
-      };
-    </script>
-  </head>
-  <body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-    <div class="min-h-screen flex flex-col">
-      <!-- Header -->
-      <header
-        class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50"
-      >
-        <div class="px-4 py-3">
-          <div class="flex items-center justify-between">
-            <!-- Logo and Title -->
-            <div class="flex items-center gap-3">
-              <button
-                id="sidebarToggle"
-                class="lg:hidden w-8 h-8 flex items-center justify-center rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <i class="ri-menu-line text-lg"></i>
-              </button>
-              <h1
-                class="text-xl font-bold text-gray-900 dark:text-white font-['Pacifico']"
-              >
-                Sticky Notes
-              </h1>
-            </div>
-            <!-- Search Bar -->
-            <div class="flex-1 max-w-md mx-4">
-              <div class="relative">
-                <div
-                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-                >
-                  <i class="ri-search-line text-gray-400"></i>
-                </div>
-                <input
-                  type="text"
-                  id="searchInput"
-                  placeholder="Search notes and folders..."
-                  class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                />
-              </div>
-            </div>
-            <!-- Header Actions -->
-            <div class="flex items-center gap-2">
-              <!-- Theme Toggle -->
-              <button
-                id="themeToggle"
-                class="w-10 h-10 flex items-center justify-center rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300"
-              >
-                <i class="ri-sun-line dark:hidden text-lg"></i>
-                <i class="ri-moon-line hidden dark:block text-lg"></i>
-              </button>
-              <!-- Profile -->
-              <div class="relative">
-                <button
-                  id="profileBtn"
-                  class="flex items-center gap-2 px-3 py-2 rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <div
-                    class="w-8 h-8 bg-primary rounded-full flex items-center justify-center"
-                  >
-                    <i class="ri-user-line text-white text-sm"></i>
-                  </div>
-                  <span
-                    class="hidden sm:block text-gray-700 dark:text-gray-300 text-sm font-medium"
-                    >Profile</span
-                  >
-                </button>
-                <!-- Profile Dropdown -->
-                <div
-                  id="profileDropdown"
-                  class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 hidden"
-                >
-                  <div class="p-4">
-                    <div class="flex items-center gap-3 mb-3">
-                      <div
-                        class="w-12 h-12 bg-primary rounded-full flex items-center justify-center"
-                      >
-                        <i class="ri-user-line text-white text-lg"></i>
-                      </div>
-                      <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white">
-                          John Doe
-                        </h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                          john@example.com
-                        </p>
-                      </div>
-                    </div>
-                    <div
-                      class="border-t border-gray-200 dark:border-gray-700 pt-3"
-                    >
-                      <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm text-gray-600 dark:text-gray-400"
-                          >Total Notes</span
-                        >
-                        <span
-                          id="totalNotes"
-                          class="text-sm font-semibold text-gray-900 dark:text-white"
-                          >0</span
-                        >
-                      </div>
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-400"
-                          >Total Folders</span
-                        >
-                        <span
-                          id="totalFolders"
-                          class="text-sm font-semibold text-gray-900 dark:text-white"
-                          >0</span
-                        >
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-      <div class="flex flex-1 overflow-hidden">
-        <!-- Sidebar -->
-        <aside
-          id="sidebar"
-          class="fixed lg:relative inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 h-[calc(100vh-64px)]"
-        >
-          <div class="p-4">
-            <!-- New Folder Button -->
-            <button
-              id="newFolderBtn"
-              class="w-full flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors mb-4 whitespace-nowrap !rounded-button"
-            >
-              <i class="ri-folder-add-line"></i>
-              <span>New Folder</span>
-            </button>
-            <!-- Folders List -->
-            <div class="space-y-2">
-              <div class="flex items-center justify-between mb-2">
-                <h3
-                  class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider"
-                >
-                  Folders
-                </h3>
-              </div>
-              <div id="foldersList" class="space-y-1">
-                <!-- Folders will be rendered here -->
-              </div>
-            </div>
-          </div>
-        </aside>
-        <!-- Sidebar Overlay -->
-        <div
-          id="sidebarOverlay"
-          class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"
-        ></div>
-        <!-- Main Content -->
-        <main class="flex-1 p-4 lg:p-6 overflow-y-auto h-[calc(100vh-64px)]">
-          <!-- Content Header -->
-          <div
-            class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4"
-          >
-            <div>
-              <h2
-                id="currentFolderTitle"
-                class="text-2xl font-bold text-gray-900 dark:text-white"
-              >
-                All Notes
-              </h2>
-              <p
-                id="currentFolderDesc"
-                class="text-gray-600 dark:text-gray-400 mt-1"
-              >
-                Manage your sticky notes
-              </p>
-            </div>
-            <div class="flex items-center gap-2">
-              <!-- View Toggle -->
-              <div
-                class="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1"
-              >
-                <button
-                  id="gridViewBtn"
-                  class="px-3 py-1 rounded bg-white dark:bg-gray-600 shadow-sm transition-all"
-                >
-                  <i class="ri-grid-line text-sm"></i>
-                </button>
-                <button
-                  id="listViewBtn"
-                  class="px-3 py-1 rounded transition-all"
-                >
-                  <i class="ri-list-check text-sm"></i>
-                </button>
-              </div>
-              <!-- New Note Button -->
-              <button
-                id="newNoteBtn"
-                class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap !rounded-button"
-              >
-                <i class="ri-add-line"></i>
-                <span class="hidden sm:inline">New Note</span>
-              </button>
-            </div>
-          </div>
-          <!-- Notes Grid -->
-          <div
-            id="notesContainer"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[calc(100vh-240px)]"
-          >
-            <!-- Notes will be rendered here -->
-          </div>
-          <!-- Empty State -->
-          <div id="emptyState" class="text-center py-12 hidden">
-            <div
-              class="w-24 h-24 mx-auto mb-4 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center"
-            >
-              <i
-                class="ri-sticky-note-line text-3xl text-yellow-600 dark:text-yellow-400"
-              ></i>
-            </div>
-            <h3
-              class="text-lg font-semibold text-gray-900 dark:text-white mb-2"
-            >
-              No notes yet
-            </h3>
-            <p class="text-gray-600 dark:text-gray-400 mb-4">
-              Create your first sticky note to get started
-            </p>
-            <button
-              class="px-6 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap !rounded-button"
-            >
-              <i class="ri-add-line mr-2"></i>Create Note
-            </button>
-          </div>
-        </main>
-      </div>
-    </div>
-    <!-- Note Modal -->
-    <div
-      id="noteModal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden"
-    >
-      <div class="flex items-center justify-center min-h-screen p-4">
-        <div
-          class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md transform transition-all"
-        >
-          <div class="p-6">
-            <div class="flex items-center justify-between mb-4">
-              <h3
-                id="modalTitle"
-                class="text-lg font-semibold text-gray-900 dark:text-white"
-              >
-                New Note
-              </h3>
-              <button
-                id="closeModal"
-                class="w-8 h-8 flex items-center justify-center rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <i class="ri-close-line"></i>
-              </button>
-            </div>
-            <form id="noteForm">
-              <div class="mb-4">
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >Title</label
-                >
-                <input
-                  type="text"
-                  id="noteTitle"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
-              <div class="mb-4">
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >Content</label
-                >
-                <textarea
-                  id="noteContent"
-                  rows="4"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                ></textarea>
-              </div>
-              <div class="mb-6">
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >Background Color</label
-                >
-                <div class="flex gap-2">
-                  <button
-                    type="button"
-                    class="color-option w-8 h-8 rounded-full bg-yellow-200 border-2 border-transparent hover:border-gray-400 transition-colors"
-                    data-color="yellow"
-                  ></button>
-                  <button
-                    type="button"
-                    class="color-option w-8 h-8 rounded-full bg-blue-200 border-2 border-transparent hover:border-gray-400 transition-colors"
-                    data-color="blue"
-                  ></button>
-                  <button
-                    type="button"
-                    class="color-option w-8 h-8 rounded-full bg-pink-200 border-2 border-transparent hover:border-gray-400 transition-colors"
-                    data-color="pink"
-                  ></button>
-                  <button
-                    type="button"
-                    class="color-option w-8 h-8 rounded-full bg-green-200 border-2 border-transparent hover:border-gray-400 transition-colors"
-                    data-color="green"
-                  ></button>
-                  <button
-                    type="button"
-                    class="color-option w-8 h-8 rounded-full bg-purple-200 border-2 border-transparent hover:border-gray-400 transition-colors"
-                    data-color="purple"
-                  ></button>
-                </div>
-              </div>
-              <div class="flex gap-3">
-                <button
-                  type="button"
-                  id="cancelBtn"
-                  class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-button hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors whitespace-nowrap !rounded-button"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap !rounded-button"
-                >
-                  Save Note
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Folder Modal -->
-    <div
-      id="folderModal"
-      class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden"
-    >
-      <div class="flex items-center justify-center min-h-screen p-4">
-        <div
-          class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md transform transition-all"
-        >
-          <div class="p-6">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                New Folder
-              </h3>
-              <button
-                id="closeFolderModal"
-                class="w-8 h-8 flex items-center justify-center rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <i class="ri-close-line"></i>
-              </button>
-            </div>
-            <form id="folderForm">
-              <div class="mb-6">
-                <label
-                  class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >Folder Name</label
-                >
-                <input
-                  type="text"
-                  id="folderName"
-                  required
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
-              </div>
-              <div class="flex gap-3">
-                <button
-                  type="button"
-                  id="cancelFolderBtn"
-                  class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-button hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors whitespace-nowrap !rounded-button"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap !rounded-button"
-                >
-                  Create Folder
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-    <script id="theme-handler">
-      document.addEventListener("DOMContentLoaded", function () {
-        const themeToggle = document.getElementById("themeToggle");
-        const html = document.documentElement;
-        const savedTheme = localStorage.getItem("theme") || "light";
-        html.classList.toggle("dark", savedTheme === "dark");
-        themeToggle.addEventListener("click", function () {
-          const isDark = html.classList.contains("dark");
-          html.classList.toggle("dark", !isDark);
-          localStorage.setItem("theme", !isDark ? "dark" : "light");
-        });
-      });
-    </script>
-    <script id="sidebar-handler">
-      document.addEventListener("DOMContentLoaded", function () {
-        const sidebar = document.getElementById("sidebar");
-        const sidebarToggle = document.getElementById("sidebarToggle");
-        const sidebarOverlay = document.getElementById("sidebarOverlay");
-        function toggleSidebar() {
-          sidebar.classList.toggle("-translate-x-full");
-          sidebarOverlay.classList.toggle("hidden");
-        }
-        sidebarToggle.addEventListener("click", toggleSidebar);
-        sidebarOverlay.addEventListener("click", toggleSidebar);
-      });
-    </script>
-    <script id="profile-handler">
-      document.addEventListener("DOMContentLoaded", function () {
-        const profileBtn = document.getElementById("profileBtn");
-        const profileDropdown = document.getElementById("profileDropdown");
-        profileBtn.addEventListener("click", function (e) {
-          e.stopPropagation();
-          profileDropdown.classList.toggle("hidden");
-        });
-        document.addEventListener("click", function () {
-          profileDropdown.classList.add("hidden");
-        });
-      });
-    </script>
-    <script id="notes-app">
-      document.addEventListener("DOMContentLoaded", function () {
-        let notes = JSON.parse(localStorage.getItem("stickyNotes")) || [];
-        let folders = JSON.parse(localStorage.getItem("stickyFolders")) || [];
-        let currentFolder = null;
-        let editingNoteId = null;
-        let selectedColor = "yellow";
-        const noteModal = document.getElementById("noteModal");
-        const folderModal = document.getElementById("folderModal");
-        const notesContainer = document.getElementById("notesContainer");
-        const foldersList = document.getElementById("foldersList");
-        const emptyState = document.getElementById("emptyState");
-        function saveData() {
-          localStorage.setItem("stickyNotes", JSON.stringify(notes));
-          localStorage.setItem("stickyFolders", JSON.stringify(folders));
-          updateStats();
-        }
-        function updateStats() {
-          document.getElementById("totalNotes").textContent = notes.length;
-          document.getElementById("totalFolders").textContent = folders.length;
-        }
-        function generateId() {
-          return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        }
-        function getColorClasses(color) {
-          const colors = {
-            yellow: "bg-yellow-200 dark:bg-yellow-300",
-            blue: "bg-blue-200 dark:bg-blue-300",
-            pink: "bg-pink-200 dark:bg-pink-300",
-            green: "bg-green-200 dark:bg-green-300",
-            purple: "bg-purple-200 dark:bg-purple-300",
-          };
-          return colors[color] || colors.yellow;
-        }
-        function createNoteElement(note) {
-          const noteEl = document.createElement("div");
-          noteEl.className = `note-card relative ${getColorClasses(note.color)} p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer transform hover:-translate-y-1 w-full h-[280px] flex flex-col`;
-          noteEl.setAttribute("data-note-id", note.id);
-          noteEl.innerHTML = `
-      <div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full shadow-lg transform rotate-12"></div>
-      <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-      <button class="delete-note w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors flex items-center justify-center" data-note-id="${note.id}">
-      <i class="ri-close-line text-xs"></i>
-      </button>
-      </div>
-      <h3 class="font-semibold text-gray-800 dark:text-gray-900 mb-2 pr-8 truncate">${note.title}</h3>
-      <p class="text-gray-700 dark:text-gray-800 text-sm overflow-hidden flex-1" style="display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical;">${note.content}</p>
-      <div class="mt-3 text-xs text-gray-600 dark:text-gray-700 pt-2 border-t border-gray-200/50">${new Date(note.createdAt).toLocaleDateString()}</div>
-      `;
-          noteEl.addEventListener("dblclick", () => editNote(note.id));
-          noteEl.addEventListener("mouseenter", () => {
-            noteEl.classList.add("group");
-          });
-          return noteEl;
-        }
-        function renderNotes() {
-          const filteredNotes = currentFolder
-            ? notes.filter((note) => note.folderId === currentFolder.id)
-            : notes;
-          notesContainer.innerHTML = "";
-          if (filteredNotes.length === 0) {
-            emptyState.classList.remove("hidden");
-          } else {
-            emptyState.classList.add("hidden");
-            filteredNotes.forEach((note) => {
-              const noteEl = createNoteElement(note);
-              noteEl.style.opacity = "0";
-              noteEl.style.transform = "translateY(20px) scale(0.9)";
-              notesContainer.appendChild(noteEl);
-              setTimeout(() => {
-                noteEl.style.transition = "all 0.3s ease";
-                noteEl.style.opacity = "1";
-                noteEl.style.transform = "translateY(0) scale(1)";
-              }, 50);
-            });
-          }
-        }
-        function renderFolders() {
-          foldersList.innerHTML = "";
-          const allNotesItem = document.createElement("div");
-          allNotesItem.className = `folder-item flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${!currentFolder ? "bg-primary text-white" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`;
-          allNotesItem.innerHTML = `
-      <i class="ri-file-list-line"></i>
-      <span>All Notes</span>
-      <span class="ml-auto text-xs opacity-75">${notes.length}</span>
-      `;
-          allNotesItem.addEventListener("click", () => selectFolder(null));
-          foldersList.appendChild(allNotesItem);
-          folders.forEach((folder) => {
-            const folderNotes = notes.filter((note) => note.folderId === folder.id);
-            const folderEl = document.createElement("div");
-            folderEl.className = `folder-item flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${currentFolder?.id === folder.id ? "bg-primary text-white" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`;
-            folderEl.innerHTML = `
-      <i class="ri-folder-line"></i>
-      <span>${folder.name}</span>
-      <span class="ml-auto text-xs opacity-75">${folderNotes.length}</span>
-      `;
-            folderEl.addEventListener("click", () => selectFolder(folder));
-            foldersList.appendChild(folderEl);
-          });
-        }
-        function selectFolder(folder) {
-          currentFolder = folder;
-          document.getElementById("currentFolderTitle").textContent = folder
-            ? folder.name
-            : "All Notes";
-          document.getElementById("currentFolderDesc").textContent = folder
-            ? `Notes in ${folder.name}`
-            : "Manage your sticky notes";
-          renderFolders();
-          renderNotes();
-        }
-        function showNoteModal(noteId = null) {
-          editingNoteId = noteId;
-          const note = noteId ? notes.find((n) => n.id === noteId) : null;
-          document.getElementById("modalTitle").textContent = note
-            ? "Edit Note"
-            : "New Note";
-          document.getElementById("noteTitle").value = note ? note.title : "";
-          document.getElementById("noteContent").value = note ? note.content : "";
-          selectedColor = note ? note.color : "yellow";
-          document.querySelectorAll(".color-option").forEach((btn) => {
-            btn.classList.toggle("ring-2", btn.dataset.color === selectedColor);
-            btn.classList.toggle(
-              "ring-gray-400",
-              btn.dataset.color === selectedColor,
-            );
-          });
-          noteModal.classList.remove("hidden");
-          setTimeout(() => {
-            noteModal.querySelector(".transform").style.transform = "scale(1)";
-          }, 10);
-        }
-        function hideNoteModal() {
-          noteModal.querySelector(".transform").style.transform = "scale(0.9)";
-          setTimeout(() => {
-            noteModal.classList.add("hidden");
-          }, 150);
-        }
-        function showFolderModal() {
-          document.getElementById("folderName").value = "";
-          folderModal.classList.remove("hidden");
-        }
-        function hideFolderModal() {
-          folderModal.classList.add("hidden");
-        }
-        function editNote(noteId) {
-          showNoteModal(noteId);
-        }
-        function deleteNote(noteId) {
-          const noteEl = document.querySelector(`[data-note-id="${noteId}"]`);
-          if (noteEl) {
-            noteEl.style.transition = "all 0.3s ease";
-            noteEl.style.transform = "scale(0) rotate(10deg)";
-            noteEl.style.opacity = "0";
-            setTimeout(() => {
-              notes = notes.filter((note) => note.id !== noteId);
-              saveData();
-              renderNotes();
-            }, 300);
-          }
-        }
-        // Event Listeners
-        document
-          .getElementById("newNoteBtn")
-          .addEventListener("click", () => showNoteModal());
-        document
-          .getElementById("newFolderBtn")
-          .addEventListener("click", showFolderModal);
-        document
-          .getElementById("closeModal")
-          .addEventListener("click", hideNoteModal);
-        document.getElementById("cancelBtn").addEventListener("click", hideNoteModal);
-        document
-          .getElementById("closeFolderModal")
-          .addEventListener("click", hideFolderModal);
-        document
-          .getElementById("cancelFolderBtn")
-          .addEventListener("click", hideFolderModal);
-        document.querySelectorAll(".color-option").forEach((btn) => {
-          btn.addEventListener("click", function () {
-            selectedColor = this.dataset.color;
-            document.querySelectorAll(".color-option").forEach((b) => {
-              b.classList.remove("ring-2", "ring-gray-400");
-            });
-            this.classList.add("ring-2", "ring-gray-400");
-          });
-        });
-        document.getElementById("noteForm").addEventListener("submit", function (e) {
-          e.preventDefault();
-          const title = document.getElementById("noteTitle").value.trim();
-          const content = document.getElementById("noteContent").value.trim();
-          if (title && content) {
-            if (editingNoteId) {
-              const noteIndex = notes.findIndex((n) => n.id === editingNoteId);
-              if (noteIndex !== -1) {
-                notes[noteIndex] = {
-                  ...notes[noteIndex],
-                  title,
-                  content,
-                  color: selectedColor,
-                  updatedAt: new Date().toISOString(),
-                };
-              }
-            } else {
-              const newNote = {
-                id: generateId(),
-                title,
-                content,
-                color: selectedColor,
-                folderId: currentFolder?.id || null,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-              };
-              notes.unshift(newNote);
-            }
-            saveData();
-            renderNotes();
-            hideNoteModal();
-          }
-        });
-        document
-          .getElementById("folderForm")
-          .addEventListener("submit", function (e) {
-            e.preventDefault();
-            const name = document.getElementById("folderName").value.trim();
-            if (name) {
-              const newFolder = {
-                id: generateId(),
-                name,
-                createdAt: new Date().toISOString(),
-              };
-              folders.push(newFolder);
-              saveData();
-              renderFolders();
-              hideFolderModal();
-            }
-          });
-        notesContainer.addEventListener("click", function (e) {
-          if (e.target.closest(".delete-note")) {
-            e.stopPropagation();
-            const noteId = e.target.closest(".delete-note").dataset.noteId;
-            deleteNote(noteId);
-          }
-        });
-        document
-          .getElementById("searchInput")
-          .addEventListener("input", function (e) {
-            const query = e.target.value.toLowerCase();
-            const noteCards = document.querySelectorAll(".note-card");
-            noteCards.forEach((card) => {
-              const title = card.querySelector("h3").textContent.toLowerCase();
-              const content = card.querySelector("p").textContent.toLowerCase();
-              const matches = title.includes(query) || content.includes(query);
-              card.style.display = matches ? "block" : "none";
-            });
-          });
-        // Initialize
-        renderFolders();
-        renderNotes();
-        updateStats();
-      });
-    </script>
-  </body>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticky Notes App</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+</style>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+primary: '#F59E0B',
+secondary: '#EF4444'
+},
+borderRadius: {
+'none': '0px',
+'sm': '4px',
+DEFAULT: '8px',
+'md': '12px',
+'lg': '16px',
+'xl': '20px',
+'2xl': '24px',
+'3xl': '32px',
+'full': '9999px',
+'button': '8px'
+}
+}
+}
+}
+</script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+<div class="min-h-screen flex flex-col">
+<!-- Header -->
+<header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+<div class="px-4 py-3">
+<div class="flex items-center justify-between">
+<!-- Logo and Title -->
+<div class="flex items-center gap-3">
+<button id="sidebarToggle" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+<i class="ri-menu-line text-lg"></i>
+</button>
+<h1 class="text-xl font-bold text-gray-900 dark:text-white font-['Pacifico']">Sticky Notes</h1>
+</div>
+<!-- Search Bar -->
+<div class="flex-1 max-w-md mx-4">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<i class="ri-search-line text-gray-400"></i>
+</div>
+<input type="text" id="searchInput" placeholder="Search notes and folders..."
+class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
+</div>
+</div>
+<!-- Header Actions -->
+<div class="flex items-center gap-2">
+<!-- Theme Toggle -->
+<button id="themeToggle" class="w-10 h-10 flex items-center justify-center rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300">
+<i class="ri-sun-line dark:hidden text-lg"></i>
+<i class="ri-moon-line hidden dark:block text-lg"></i>
+</button>
+<!-- Profile -->
+<div class="relative">
+<button id="profileBtn" class="flex items-center gap-2 px-3 py-2 rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+<div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+<i class="ri-user-line text-white text-sm"></i>
+</div>
+<span class="hidden sm:block text-gray-700 dark:text-gray-300 text-sm font-medium">Profile</span>
+</button>
+<!-- Profile Dropdown -->
+<div id="profileDropdown" class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 hidden">
+<div class="p-4">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+<i class="ri-user-line text-white text-lg"></i>
+</div>
+<div>
+<h3 class="font-semibold text-gray-900 dark:text-white">John Doe</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">john@example.com</p>
+</div>
+</div>
+<div class="border-t border-gray-200 dark:border-gray-700 pt-3">
+<div class="flex justify-between items-center mb-2">
+<span class="text-sm text-gray-600 dark:text-gray-400">Total Notes</span>
+<span id="totalNotes" class="text-sm font-semibold text-gray-900 dark:text-white">0</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-sm text-gray-600 dark:text-gray-400">Total Folders</span>
+<span id="totalFolders" class="text-sm font-semibold text-gray-900 dark:text-white">0</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Sidebar -->
+<aside id="sidebar" class="fixed lg:relative inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 h-[calc(100vh-64px)]">
+<div class="p-4">
+<!-- New Folder Button -->
+<button id="newFolderBtn" class="w-full flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors mb-4 whitespace-nowrap !rounded-button">
+<i class="ri-folder-add-line"></i>
+<span>New Folder</span>
+</button>
+<!-- Folders List -->
+<div class="space-y-2">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Folders</h3>
+</div>
+<div id="foldersList" class="space-y-1">
+<!-- Folders will be rendered here -->
+</div>
+</div>
+</div>
+</aside>
+<!-- Sidebar Overlay -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden hidden"></div>
+<!-- Main Content -->
+<main class="flex-1 p-4 lg:p-6 overflow-y-auto h-[calc(100vh-64px)]">
+<!-- Content Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+<div>
+<h2 id="currentFolderTitle" class="text-2xl font-bold text-gray-900 dark:text-white">All Notes</h2>
+<p id="currentFolderDesc" class="text-gray-600 dark:text-gray-400 mt-1">Manage your sticky notes</p>
+</div>
+<div class="flex items-center gap-2">
+<!-- View Toggle -->
+<div class="flex items-center bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+<button id="gridViewBtn" class="px-3 py-1 rounded bg-white dark:bg-gray-600 shadow-sm transition-all">
+<i class="ri-grid-line text-sm"></i>
+</button>
+<button id="listViewBtn" class="px-3 py-1 rounded transition-all">
+<i class="ri-list-check text-sm"></i>
+</button>
+</div>
+<!-- New Note Button -->
+<button id="newNoteBtn" class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap !rounded-button">
+<i class="ri-add-line"></i>
+<span class="hidden sm:inline">New Note</span>
+</button>
+</div>
+</div>
+<!-- Notes Grid -->
+<div id="notesContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[calc(100vh-240px)]">
+<!-- Notes will be rendered here -->
+</div>
+<!-- Empty State -->
+<div id="emptyState" class="text-center py-12 hidden">
+<div class="w-24 h-24 mx-auto mb-4 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center">
+<i class="ri-sticky-note-line text-3xl text-yellow-600 dark:text-yellow-400"></i>
+</div>
+<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No notes yet</h3>
+<p class="text-gray-600 dark:text-gray-400 mb-4">Create your first sticky note to get started</p>
+<button class="px-6 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap !rounded-button">
+<i class="ri-add-line mr-2"></i>Create Note
+</button>
+</div>
+</main>
+</div>
+</div>
+<!-- Note Modal -->
+<div id="noteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+<div class="flex items-center justify-center min-h-screen p-4">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md transform transition-all">
+<div class="p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 id="modalTitle" class="text-lg font-semibold text-gray-900 dark:text-white">New Note</h3>
+<button id="closeModal" class="w-8 h-8 flex items-center justify-center rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+<i class="ri-close-line"></i>
+</button>
+</div>
+<form id="noteForm">
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title</label>
+<input type="text" id="noteTitle" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+</div>
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content</label>
+<textarea id="noteContent" rows="4" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent resize-none"></textarea>
+</div>
+<div class="mb-6">
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Background Color</label>
+<div class="flex gap-2">
+<button type="button" class="color-option w-8 h-8 rounded-full bg-yellow-200 border-2 border-transparent hover:border-gray-400 transition-colors" data-color="yellow"></button>
+<button type="button" class="color-option w-8 h-8 rounded-full bg-blue-200 border-2 border-transparent hover:border-gray-400 transition-colors" data-color="blue"></button>
+<button type="button" class="color-option w-8 h-8 rounded-full bg-pink-200 border-2 border-transparent hover:border-gray-400 transition-colors" data-color="pink"></button>
+<button type="button" class="color-option w-8 h-8 rounded-full bg-green-200 border-2 border-transparent hover:border-gray-400 transition-colors" data-color="green"></button>
+<button type="button" class="color-option w-8 h-8 rounded-full bg-purple-200 border-2 border-transparent hover:border-gray-400 transition-colors" data-color="purple"></button>
+</div>
+</div>
+<div class="flex gap-3">
+<button type="button" id="cancelBtn" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-button hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors whitespace-nowrap !rounded-button">Cancel</button>
+<button type="submit" class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap !rounded-button">Save Note</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<!-- Folder Modal -->
+<div id="folderModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+<div class="flex items-center justify-center min-h-screen p-4">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md transform transition-all">
+<div class="p-6">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-gray-900 dark:text-white">New Folder</h3>
+<button id="closeFolderModal" class="w-8 h-8 flex items-center justify-center rounded-button hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+<i class="ri-close-line"></i>
+</button>
+</div>
+<form id="folderForm">
+<div class="mb-6">
+<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Folder Name</label>
+<input type="text" id="folderName" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+</div>
+<div class="flex gap-3">
+<button type="button" id="cancelFolderBtn" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-button hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors whitespace-nowrap !rounded-button">Cancel</button>
+<button type="submit" class="flex-1 px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap !rounded-button">Create Folder</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</div>
+<script id="theme-handler">
+document.addEventListener('DOMContentLoaded', function() {
+const themeToggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const savedTheme = localStorage.getItem('theme') || 'light';
+html.classList.toggle('dark', savedTheme === 'dark');
+themeToggle.addEventListener('click', function() {
+const isDark = html.classList.contains('dark');
+html.classList.toggle('dark', !isDark);
+localStorage.setItem('theme', !isDark ? 'dark' : 'light');
+});
+});
+</script>
+<script id="sidebar-handler">
+document.addEventListener('DOMContentLoaded', function() {
+const sidebar = document.getElementById('sidebar');
+const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+function toggleSidebar() {
+sidebar.classList.toggle('-translate-x-full');
+sidebarOverlay.classList.toggle('hidden');
+}
+sidebarToggle.addEventListener('click', toggleSidebar);
+sidebarOverlay.addEventListener('click', toggleSidebar);
+});
+</script>
+<script id="profile-handler">
+document.addEventListener('DOMContentLoaded', function() {
+const profileBtn = document.getElementById('profileBtn');
+const profileDropdown = document.getElementById('profileDropdown');
+profileBtn.addEventListener('click', function(e) {
+e.stopPropagation();
+profileDropdown.classList.toggle('hidden');
+});
+document.addEventListener('click', function() {
+profileDropdown.classList.add('hidden');
+});
+});
+</script>
+<script id="notes-app">
+document.addEventListener('DOMContentLoaded', function() {
+let notes = JSON.parse(localStorage.getItem('stickyNotes')) || [];
+let folders = JSON.parse(localStorage.getItem('stickyFolders')) || [];
+let currentFolder = null;
+let editingNoteId = null;
+let selectedColor = 'yellow';
+const noteModal = document.getElementById('noteModal');
+const folderModal = document.getElementById('folderModal');
+const notesContainer = document.getElementById('notesContainer');
+const foldersList = document.getElementById('foldersList');
+const emptyState = document.getElementById('emptyState');
+function saveData() {
+localStorage.setItem('stickyNotes', JSON.stringify(notes));
+localStorage.setItem('stickyFolders', JSON.stringify(folders));
+updateStats();
+}
+function updateStats() {
+document.getElementById('totalNotes').textContent = notes.length;
+document.getElementById('totalFolders').textContent = folders.length;
+}
+function generateId() {
+return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
+function getColorClasses(color) {
+const colors = {
+yellow: 'bg-yellow-200 dark:bg-yellow-300',
+blue: 'bg-blue-200 dark:bg-blue-300',
+pink: 'bg-pink-200 dark:bg-pink-300',
+green: 'bg-green-200 dark:bg-green-300',
+purple: 'bg-purple-200 dark:bg-purple-300'
+};
+return colors[color] || colors.yellow;
+}
+function createNoteElement(note) {
+const noteEl = document.createElement('div');
+noteEl.className = `note-card relative ${getColorClasses(note.color)} p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-move transform hover:-translate-y-1 w-[240px] h-[280px] flex flex-col`;
+noteEl.setAttribute('data-note-id', note.id);
+noteEl.style.transformOrigin = 'center center';
+noteEl.innerHTML = `
+<div class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full shadow-lg transform rotate-12"></div>
+<div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="edit-note w-6 h-6 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors flex items-center justify-center" data-note-id="${note.id}">
+<i class="ri-edit-line text-xs"></i>
+</button>
+<button class="delete-note w-6 h-6 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors flex items-center justify-center" data-note-id="${note.id}">
+<i class="ri-close-line text-xs"></i>
+</button>
+</div>
+<div class="absolute -bottom-1 -right-1 w-8 h-8 bg-gradient-to-br from-transparent via-black/5 to-black/10 rounded-br-lg transform rotate-6"></div>
+<h3 class="font-semibold text-gray-800 dark:text-gray-900 mb-2 pr-8 truncate">${note.title}</h3>
+<p class="text-gray-700 dark:text-gray-800 text-sm overflow-hidden flex-1" style="display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical;">${note.content}</p>
+<div class="mt-3 text-xs text-gray-600 dark:text-gray-700 pt-2 border-t border-gray-200/50">${new Date(note.createdAt).toLocaleDateString()}</div>
+`;
+noteEl.addEventListener('dblclick', () => editNote(note.id));
+noteEl.addEventListener('mouseenter', () => {
+noteEl.classList.add('group');
+});
+return noteEl;
+}
+function renderNotes() {
+const filteredNotes = currentFolder
+? notes.filter(note => note.folderId === currentFolder.id)
+: notes;
+notesContainer.innerHTML = '';
+notesContainer.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 min-h-[calc(100vh-240px)] p-4';
+if (filteredNotes.length === 0) {
+emptyState.classList.remove('hidden');
+} else {
+emptyState.classList.add('hidden');
+filteredNotes.forEach((note, index) => {
+const noteEl = createNoteElement(note);
+noteEl.style.opacity = '0';
+noteEl.style.transform = 'translateY(20px) scale(0.9)';
+notesContainer.appendChild(noteEl);
+setTimeout(() => {
+noteEl.style.transition = 'all 0.3s ease';
+noteEl.style.opacity = '1';
+noteEl.style.transform = 'translateY(0) scale(1)';
+}, index * 50);
+// Make notes draggable
+noteEl.draggable = true;
+noteEl.addEventListener('dragstart', (e) => {
+e.dataTransfer.setData('text/plain', note.id);
+noteEl.classList.add('dragging');
+noteEl.style.opacity = '0.5';
+});
+noteEl.addEventListener('dragend', () => {
+noteEl.classList.remove('dragging');
+noteEl.style.opacity = '1';
+});
+// Add tilt effect on hover
+noteEl.addEventListener('mousemove', (e) => {
+const rect = noteEl.getBoundingClientRect();
+const x = e.clientX - rect.left;
+const y = e.clientY - rect.top;
+const centerX = rect.width / 2;
+const centerY = rect.height / 2;
+const rotateX = (y - centerY) / 20;
+const rotateY = (centerX - x) / 20;
+noteEl.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+});
+noteEl.addEventListener('mouseleave', () => {
+noteEl.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+});
+});
+}
+// Add drop zone effect
+notesContainer.addEventListener('dragover', (e) => {
+e.preventDefault();
+const draggingNote = document.querySelector('.dragging');
+if (draggingNote) {
+const afterElement = getDragAfterElement(notesContainer, e.clientY);
+if (afterElement) {
+notesContainer.insertBefore(draggingNote, afterElement);
+} else {
+notesContainer.appendChild(draggingNote);
+}
+}
+});
+}
+function getDragAfterElement(container, y) {
+const draggableElements = [...container.querySelectorAll('.note-card:not(.dragging)')];
+return draggableElements.reduce((closest, child) => {
+const box = child.getBoundingClientRect();
+const offset = y - box.top - box.height / 2;
+if (offset < 0 && offset > closest.offset) {
+return { offset: offset, element: child };
+} else {
+return closest;
+}
+}, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+function renderFolders() {
+foldersList.innerHTML = '';
+const allNotesItem = document.createElement('div');
+allNotesItem.className = `folder-item flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${!currentFolder ? 'bg-primary text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`;
+allNotesItem.innerHTML = `
+<i class="ri-file-list-line"></i>
+<span>All Notes</span>
+<span class="ml-auto text-xs opacity-75">${notes.length}</span>
+`;
+allNotesItem.addEventListener('click', () => selectFolder(null));
+foldersList.appendChild(allNotesItem);
+folders.forEach(folder => {
+const folderNotes = notes.filter(note => note.folderId === folder.id);
+const folderEl = document.createElement('div');
+folderEl.className = `folder-item flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${currentFolder?.id === folder.id ? 'bg-primary text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}`;
+folderEl.innerHTML = `
+<i class="ri-folder-line"></i>
+<span>${folder.name}</span>
+<span class="ml-auto text-xs opacity-75">${folderNotes.length}</span>
+`;
+folderEl.addEventListener('click', () => selectFolder(folder));
+foldersList.appendChild(folderEl);
+});
+}
+function selectFolder(folder) {
+currentFolder = folder;
+document.getElementById('currentFolderTitle').textContent = folder ? folder.name : 'All Notes';
+document.getElementById('currentFolderDesc').textContent = folder ? `Notes in ${folder.name}` : 'Manage your sticky notes';
+renderFolders();
+renderNotes();
+}
+function showNoteModal(noteId = null) {
+editingNoteId = noteId;
+const note = noteId ? notes.find(n => n.id === noteId) : null;
+document.getElementById('modalTitle').textContent = note ? 'Edit Note' : 'New Note';
+document.getElementById('noteTitle').value = note ? note.title : '';
+document.getElementById('noteContent').value = note ? note.content : '';
+selectedColor = note ? note.color : 'yellow';
+document.querySelectorAll('.color-option').forEach(btn => {
+btn.classList.toggle('ring-2', btn.dataset.color === selectedColor);
+btn.classList.toggle('ring-gray-400', btn.dataset.color === selectedColor);
+});
+noteModal.classList.remove('hidden');
+setTimeout(() => {
+noteModal.querySelector('.transform').style.transform = 'scale(1)';
+}, 10);
+}
+function hideNoteModal() {
+noteModal.querySelector('.transform').style.transform = 'scale(0.9)';
+setTimeout(() => {
+noteModal.classList.add('hidden');
+}, 150);
+}
+function showFolderModal() {
+document.getElementById('folderName').value = '';
+folderModal.classList.remove('hidden');
+}
+function hideFolderModal() {
+folderModal.classList.add('hidden');
+}
+function editNote(noteId) {
+showNoteModal(noteId);
+}
+function deleteNote(noteId) {
+const noteEl = document.querySelector(`[data-note-id="${noteId}"]`);
+if (noteEl) {
+noteEl.style.transition = 'all 0.3s ease';
+noteEl.style.transform = 'scale(0) rotate(10deg)';
+noteEl.style.opacity = '0';
+setTimeout(() => {
+notes = notes.filter(note => note.id !== noteId);
+saveData();
+renderNotes();
+}, 300);
+}
+}
+// Event Listeners
+document.getElementById('newNoteBtn').addEventListener('click', () => showNoteModal());
+document.getElementById('newFolderBtn').addEventListener('click', showFolderModal);
+document.getElementById('closeModal').addEventListener('click', hideNoteModal);
+document.getElementById('cancelBtn').addEventListener('click', hideNoteModal);
+document.getElementById('closeFolderModal').addEventListener('click', hideFolderModal);
+document.getElementById('cancelFolderBtn').addEventListener('click', hideFolderModal);
+document.querySelectorAll('.color-option').forEach(btn => {
+btn.addEventListener('click', function() {
+selectedColor = this.dataset.color;
+document.querySelectorAll('.color-option').forEach(b => {
+b.classList.remove('ring-2', 'ring-gray-400');
+});
+this.classList.add('ring-2', 'ring-gray-400');
+});
+});
+document.getElementById('noteForm').addEventListener('submit', function(e) {
+e.preventDefault();
+const title = document.getElementById('noteTitle').value.trim();
+const content = document.getElementById('noteContent').value.trim();
+if (title && content) {
+if (editingNoteId) {
+const noteIndex = notes.findIndex(n => n.id === editingNoteId);
+if (noteIndex !== -1) {
+notes[noteIndex] = {
+...notes[noteIndex],
+title,
+content,
+color: selectedColor,
+updatedAt: new Date().toISOString()
+};
+}
+} else {
+const newNote = {
+id: generateId(),
+title,
+content,
+color: selectedColor,
+folderId: currentFolder?.id || null,
+createdAt: new Date().toISOString(),
+updatedAt: new Date().toISOString()
+};
+notes.unshift(newNote);
+}
+saveData();
+renderNotes();
+hideNoteModal();
+}
+});
+document.getElementById('folderForm').addEventListener('submit', function(e) {
+e.preventDefault();
+const name = document.getElementById('folderName').value.trim();
+if (name) {
+const newFolder = {
+id: generateId(),
+name,
+createdAt: new Date().toISOString()
+};
+folders.push(newFolder);
+saveData();
+renderFolders();
+hideFolderModal();
+}
+});
+notesContainer.addEventListener('click', function(e) {
+if (e.target.closest('.delete-note')) {
+e.stopPropagation();
+const noteId = e.target.closest('.delete-note').dataset.noteId;
+deleteNote(noteId);
+}
+});
+document.getElementById('searchInput').addEventListener('input', function(e) {
+const query = e.target.value.toLowerCase();
+const noteCards = document.querySelectorAll('.note-card');
+noteCards.forEach(card => {
+const title = card.querySelector('h3').textContent.toLowerCase();
+const content = card.querySelector('p').textContent.toLowerCase();
+const matches = title.includes(query) || content.includes(query);
+card.style.display = matches ? 'block' : 'none';
+});
+});
+// Initialize
+renderFolders();
+renderNotes();
+updateStats();
+});
+</script>
+</body>
 </html>
