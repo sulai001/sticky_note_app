@@ -1,0 +1,15 @@
+{
+  "name": "sticky-notes-app",
+  "version": "1.0.0",
+  "description": "Full-stack sticky notes application",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "cd backend && npm run dev",
+    "install-backend": "cd backend && npm install",
+    "install-frontend": "cd frontend && npm install",
+    "build": "cd frontend && npm run build"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
