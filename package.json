@@ -7,7 +7,7 @@
     "dev": "cd backend && npm run dev",
     "install-backend": "cd backend && npm install",
     "install-frontend": "cd frontend && npm install",
-    "build": "cd frontend && npm run build"
+    "build": "npm run install-frontend && cd frontend && npm run build"
   },
   "engines": {
     "node": ">=18.0.0"

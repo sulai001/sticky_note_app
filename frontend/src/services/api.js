@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+const API_BASE_URL = 'https://sticky-note-app-8ge7.onrender.com' || 'http://localhost:5000/api'
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
