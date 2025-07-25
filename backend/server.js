@@ -20,7 +20,12 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: true,
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://sticky-note-app-12.onrender.com',
+    /\.onrender\.com$/
+  ],
   credentials: true
 }));
 app.use(express.json());
