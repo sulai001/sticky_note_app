@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+const API_BASE_URL = 'https://sticky-note-app-12.onrender.com/api'
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -21,7 +21,7 @@ const handleResponse = async (response) => {
 // Auth API
 export const authAPI = {
     login: async (credentials) => {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(credentials)
@@ -30,7 +30,7 @@ export const authAPI = {
     },
 
     signup: async (userData) => {
-        const response = await fetch(`${API_BASE_URL}/auth/signup`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/auth/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(userData)
@@ -39,7 +39,7 @@ export const authAPI = {
     },
 
     getCurrentUser: async () => {
-        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/auth/me`, {
             headers: getAuthHeaders()
         })
         return handleResponse(response)
@@ -62,7 +62,7 @@ export const notesAPI = {
 
     // Get a specific note
     getNote: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/notes/${id}`, {
             headers: getAuthHeaders()
         })
         return handleResponse(response)
@@ -70,7 +70,7 @@ export const notesAPI = {
 
     // Create a new note
     createNote: async (noteData) => {
-        const response = await fetch(`${API_BASE_URL}/notes`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/notes`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(noteData)
@@ -80,7 +80,7 @@ export const notesAPI = {
 
     // Update a note
     updateNote: async (id, noteData) => {
-        const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/notes/${id}`, {
             method: 'PUT',
             headers: getAuthHeaders(),
             body: JSON.stringify(noteData)
@@ -90,7 +90,7 @@ export const notesAPI = {
 
     // Delete a note
     deleteNote: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/notes/${id}`, {
             method: 'DELETE',
             headers: getAuthHeaders()
         })
@@ -99,7 +99,7 @@ export const notesAPI = {
 
     // Move note to folder
     moveNote: async (id, folderId) => {
-        const response = await fetch(`${API_BASE_URL}/notes/${id}/move`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/notes/${id}/move`, {
             method: 'PATCH',
             headers: getAuthHeaders(),
             body: JSON.stringify({ folderId })
@@ -112,7 +112,7 @@ export const notesAPI = {
 export const foldersAPI = {
     // Get all folders
     getFolders: async () => {
-        const response = await fetch(`${API_BASE_URL}/folders`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/folders`, {
             headers: getAuthHeaders()
         })
         return handleResponse(response)
@@ -120,7 +120,7 @@ export const foldersAPI = {
 
     // Get a specific folder
     getFolder: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/folders/${id}`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/folders/${id}`, {
             headers: getAuthHeaders()
         })
         return handleResponse(response)
@@ -128,7 +128,7 @@ export const foldersAPI = {
 
     // Get notes in a folder
     getFolderNotes: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/folders/${id}/notes`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/folders/${id}/notes`, {
             headers: getAuthHeaders()
         })
         return handleResponse(response)
@@ -136,7 +136,7 @@ export const foldersAPI = {
 
     // Create a new folder
     createFolder: async (folderData) => {
-        const response = await fetch(`${API_BASE_URL}/folders`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/folders`, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify(folderData)
@@ -146,7 +146,7 @@ export const foldersAPI = {
 
     // Update a folder
     updateFolder: async (id, folderData) => {
-        const response = await fetch(`${API_BASE_URL}/folders/${id}`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/folders/${id}`, {
             method: 'PUT',
             headers: getAuthHeaders(),
             body: JSON.stringify(folderData)
@@ -156,7 +156,7 @@ export const foldersAPI = {
 
     // Delete a folder
     deleteFolder: async (id) => {
-        const response = await fetch(`${API_BASE_URL}/folders/${id}`, {
+        const response = await fetch(`https://sticky-note-app-12.onrender.com/api/folders/${id}`, {
             method: 'DELETE',
             headers: getAuthHeaders()
         })
